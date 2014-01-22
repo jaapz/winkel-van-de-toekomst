@@ -39,6 +39,7 @@ def fixtures():
         )
 
         db.session.add(u)
+    db.session.commit()
 
 
 @task(setup_db)
