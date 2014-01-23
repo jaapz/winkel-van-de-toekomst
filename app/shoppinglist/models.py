@@ -16,6 +16,13 @@ class Product(db.Model):
     name = db.Column(db.String(50))
     barcode = db.Column(db.String(100))
 
+    def to_dict(self):
+        return dict(
+            id=self.id,
+            name=self.name,
+            barcode=self.barcode
+        )
+
 
 class ShoppingList(db.Model):
     """ Represents a shopping list containing several products. """
@@ -26,3 +33,10 @@ class ShoppingList(db.Model):
     user = db.relationship('User')
     products = db.relationship(Product, secondary=shopping_lists_to_products,
                                backref='shopping_lists')
+
+    def to_dict(self):
+        return dict(
+            id=self.id,
+            user_id=self.user.id if self.user else None,
+            products=[p.to_dict() for p in self.products]
+        )

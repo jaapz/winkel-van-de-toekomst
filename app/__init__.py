@@ -26,10 +26,7 @@ def _load_user(id):
 
 # Register blueprints.
 from app.users.api import users_api
+from app.shoppinglist.api import shoppinglist_api
+
 app.register_blueprint(users_api)
-
-
-@app.route('/')
-@login_required
-def home():
-    return 'Welkom'
+app.register_blueprint(shoppinglist_api)
