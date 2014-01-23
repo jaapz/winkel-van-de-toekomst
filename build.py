@@ -9,6 +9,7 @@ sys.path.append(_curpath)
 
 from app import db
 from app.users.models import User
+from app.shoppinglist.models import Product, ShoppingList
 
 
 @task()
@@ -26,7 +27,7 @@ def setup_db():
     db.create_all()
 
 
-@task()
+@task(setup_db)
 def fixtures():
     """ Create some database fixtures. """
     u = User.query.filter(User.username == 'admin').first()
@@ -39,6 +40,24 @@ def fixtures():
         )
 
         db.session.add(u)
+
+    b = Product(
+        name='Blik Bier',
+        barcode='1902901902901902'
+    )
+
+    h = Product(
+        name='Hagelslag',
+        barcode='9090191919348524'
+    )
+
+    s = ShoppingList(user=u, name='Mijn Lijstje')
+    s.products.append(b)
+    s.products.append(h)
+
+    db.session.add(s)
+    db.session.add(b)
+    db.session.add(h)
     db.session.commit()
 
 

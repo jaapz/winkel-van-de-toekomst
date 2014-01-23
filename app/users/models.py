@@ -10,6 +10,7 @@ class User(db.Model):
     password = db.Column(db.String(128))
     name = db.Column(db.String(50))
     email = db.Column(db.String(100))
+    shopping_lists = db.relationship('ShoppingList')
 
     def get_id(self):
         """ Get the id as a unicode, for Flask-Login. """
