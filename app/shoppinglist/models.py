@@ -29,6 +29,7 @@ class ShoppingList(db.Model):
     __tablename__ = 'shopping_list'
 
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship('User')
     products = db.relationship(Product, secondary=shopping_lists_to_products,
@@ -37,6 +38,7 @@ class ShoppingList(db.Model):
     def to_dict(self):
         return dict(
             id=self.id,
+            name=self.name,
             user_id=self.user.id if self.user else None,
             products=[p.to_dict() for p in self.products]
         )

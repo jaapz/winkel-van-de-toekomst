@@ -41,16 +41,23 @@ def fixtures():
 
         db.session.add(u)
 
-    p = Product(
+    b = Product(
         name='Blik Bier',
         barcode='1902901902901902'
     )
 
-    s = ShoppingList(user=u)
-    s.products.append(p)
+    h = Product(
+        name='Hagelslag',
+        barcode='9090191919348524'
+    )
+
+    s = ShoppingList(user=u, name='Mijn Lijstje')
+    s.products.append(b)
+    s.products.append(h)
 
     db.session.add(s)
-    db.session.add(p)
+    db.session.add(b)
+    db.session.add(h)
     db.session.commit()
 
 
