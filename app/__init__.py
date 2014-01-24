@@ -30,3 +30,8 @@ from app.shoppinglist.api import shoppinglist_api
 
 app.register_blueprint(users_api)
 app.register_blueprint(shoppinglist_api)
+
+
+@app.route('/')
+def home():
+    return render_template('index.html')
