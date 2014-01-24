@@ -39,9 +39,9 @@
         </div>
 
         <div class="container">
-            {% block content %}
-                <div class="panel panel-default">
-                    <div class="panel-body">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    {% block content %}
                         <h2>Welkom</h2>
                         <hr>
                         <p>Welkom op de webinterface van de Winkel van de Toekomst. Dit
@@ -53,9 +53,9 @@
 
                         <p>Bent u nog geen klant? Registreer u dan via de knop rechts
                         bovenin deze pagina.</p>
-                    </div>
+                    {% endblock %}
                 </div>
-            {% endblock %}
+            </div>
         </div>
 
         <div class="container footer">
