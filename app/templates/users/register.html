@@ -1,0 +1,39 @@
+{% extends 'index.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <h2>Registreren</h2>
+            <hr>
+            {% if form.errors or errors %}
+                <div class="alert alert-warning">
+                    <p>De gebruikersnaam die u hebt gebruikt bestaat al, of de 
+                    wachtwoorden die u hebt ingevuld komen niet overeen.</p>
+                </div>
+            {% endif %}
+            <form method="POST" role="form">
+                {{ form.csrf_token }}
+                
+                <div class="form-group">
+                    {{ form.username.label }}
+                    {{ form.username(class="form-control") }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.password.label }}
+                    {{ form.password(class="form-control") }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.confirm.label }}
+                    {{ form.confirm(class="form-control") }}
+                </div>
+                
+                <hr>
+                <input type="submit" value="Registreren" class="btn btn-primary">
+            </form>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+{% endblock %}
