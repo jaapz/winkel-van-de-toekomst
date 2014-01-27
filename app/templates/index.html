@@ -23,7 +23,11 @@
                 <div class="navbar-collapse collapse">
                     {% block menu_content %}
                         <ul class="nav navbar-nav">
-                            {% block menu_inner_content %}{% endblock %}
+                            {% block menu_inner_content %}
+                                {% if current_user.is_authenticated() %}
+                                    <li><a href="{{ url_for('shoppinglists_views.overview') }}">Boodschappenlijstjes</a></li>
+                                {% endif %}
+                            {% endblock %}
                         </ul>
                         <div class="pull-right btn-group">
                             {% if current_user.is_authenticated() %}
