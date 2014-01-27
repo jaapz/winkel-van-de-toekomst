@@ -27,6 +27,7 @@
                         </ul>
                         <div class="pull-right btn-group">
                             {% if current_user.is_authenticated() %}
+                                <p class="navbar-text">Ingelogd als {{current_user.username}}</p>
                                 <a href="/users/logout" class="btn btn-warning navbar-btn">Uitloggen</a>
                             {% else %}
                                 <a href="/users/login" class="btn btn-default navbar-btn">Login</a>
