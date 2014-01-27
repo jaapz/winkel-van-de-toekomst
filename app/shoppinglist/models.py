@@ -22,7 +22,9 @@ class Product(db.Model):
             id=self.id,
             name=self.name,
             barcode=self.barcode,
-            price=self.price
+            price=self.price,
+            amount=2,
+            amount_scanned=1
         )
 
 
@@ -32,6 +34,7 @@ class ShoppingList(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
+    payed = db.Column(db.Boolean, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship('User')
     products = db.relationship(Product, secondary=shopping_lists_to_products,
