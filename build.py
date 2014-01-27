@@ -34,21 +34,22 @@ def fixtures():
 
     if not u:
         u = User(
-            username='admin',
-            password='test',
-            email='yolo@swag.com',
+            username='admin@hanze.nl',
+            password='test'
         )
 
         db.session.add(u)
 
     b = Product(
         name='Blik Bier',
-        barcode='1902901902901902'
+        barcode='1902901902901902',
+        price=15.0
     )
 
     h = Product(
         name='Hagelslag',
-        barcode='9090191919348524'
+        barcode='9090191919348524',
+        price=10.0
     )
 
     s = ShoppingList(user=u, name='Mijn Lijstje')

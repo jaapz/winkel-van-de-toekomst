@@ -14,7 +14,7 @@ db = SQLAlchemy(app)
 # Set up loginmanager, which will manage users that can login.
 lm = LoginManager()
 lm.init_app(app)
-#lm.login_view = 'users_views.login'
+lm.login_view = 'user_views.login'
 
 
 @lm.user_loader
@@ -26,7 +26,15 @@ def _load_user(id):
 
 # Register blueprints.
 from app.users.api import users_api
+from app.users.views import users_views
 from app.shoppinglist.api import shoppinglist_api
 
 app.register_blueprint(users_api)
+app.register_blueprint(users_views)
 app.register_blueprint(shoppinglist_api)
+
+
+@app.route('/')
+@login_required
+def home():
+    return render_template('index.html')

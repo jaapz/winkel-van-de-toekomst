@@ -15,12 +15,14 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
     barcode = db.Column(db.String(100))
+    price = db.Column(db.Float(2))
 
     def to_dict(self):
         return dict(
             id=self.id,
             name=self.name,
-            barcode=self.barcode
+            barcode=self.barcode,
+            price=self.price
         )
 
 
