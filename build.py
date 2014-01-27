@@ -34,9 +34,8 @@ def fixtures():
 
     if not u:
         u = User(
-            username='admin',
-            password='test',
-            email='yolo@swag.com',
+            username='admin@hanze.nl',
+            password='test'
         )
 
         db.session.add(u)
