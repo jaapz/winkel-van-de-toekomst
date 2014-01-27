@@ -27,13 +27,17 @@
                         </ul>
                         <div class="pull-right btn-group">
                             {% if current_user.is_authenticated() %}
-                                <p class="navbar-text">Ingelogd als {{current_user.username}}</p>
                                 <a href="/users/logout" class="btn btn-warning navbar-btn">Uitloggen</a>
                             {% else %}
                                 <a href="/users/login" class="btn btn-default navbar-btn">Login</a>
                                 <a href="/users/register" class="btn btn-primary navbar-btn">Register</a>
                             {% endif %}
                         </div>
+                        {% if current_user.is_authenticated() %}
+                            <div class="pull-right" style="margin-right:15px">
+                                <p class="navbar-text">Ingelogd als {{current_user.username}}</p>
+                            </div>
+                        {% endif %}
                     {% endblock %}
                 </div>
             </div>
