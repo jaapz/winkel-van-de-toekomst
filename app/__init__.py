@@ -28,10 +28,12 @@ def _load_user(id):
 from app.users.api import users_api
 from app.users.views import users_views
 from app.shoppinglist.api import shoppinglist_api
+from app.shoppinglist.views import shoppinglists_views
 
 app.register_blueprint(users_api)
 app.register_blueprint(users_views)
 app.register_blueprint(shoppinglist_api)
+app.register_blueprint(shoppinglists_views)
 
 
 @app.route('/')
