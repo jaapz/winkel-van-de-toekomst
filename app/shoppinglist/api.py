@@ -1,4 +1,5 @@
 from flask import Blueprint, abort, jsonify, g, Response, json, request
+from sqlalchemy import and_
 
 from app import db
 from app.shoppinglist.models import ShoppingList, Product, ShoppingListToProduct
@@ -42,7 +43,7 @@ def get_shoppinglists_products(id):
     return Response(json.dumps(results), mimetype='application/json')
 
 
-@shoppinglist_api.route('/<int:id>/products', methods=['POST', 'PUT', 'DELETE'])
+@shoppinglist_api.route('/<int:id>/products', methods=['POST', 'PUT'])
 @needs_auth
 def post_shoppinglists_product(id):
     """ Fetch all products for a shopping list. """
@@ -87,14 +88,28 @@ def post_shoppinglists_product(id):
             assoc.amount = amount if amount is not None else assoc.amount
             assoc.amount_scanned = amount_scanned if aount_scanned is not None else assoc.amount_scanned
 
-    # Deleting means we want to remove the association.
-    elif request.method == 'DELETE':
-        db.session.delete(assoc)
-
     db.session.commit()
 
     results = [p.product.to_dict(shopping_list) for p in shopping_list.products]
     return Response(json.dumps(results), mimetype='application/json')
+
+
+@shoppinglist_api.route('/<int:id>/products/<int:product_id>', methods=['DELETE'])
+@needs_auth
+def delete_product_from_shopping_list(id, product_id):
+    """ Removes a product from the shopping list. """
+    assoc = ShoppingListToProduct.query.filter(and_(
+        ShoppingListToProduct.product_id == product_id,
+        ShoppingListToProduct.shopping_list_id == id
+    )).first()
+
+    if assoc is None:
+        abort(404)
+
+    db.session.delete(assoc)
+    db.session.commit()
+
+    return Response(), 204
 
 
 @product_api.route('/<int:id>', methods=['GET'])
