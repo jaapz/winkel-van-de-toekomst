@@ -45,7 +45,7 @@ def fixtures():
     b = Product(
         name='Blik Bier',
         id=1902901902901902,
-        price=150
+        price=1500
     )
 
     ba = ShoppingListToProduct(
@@ -58,7 +58,7 @@ def fixtures():
     h = Product(
         name='Hagelslag',
         id=9090191919348524,
-        price=100
+        price=1000
     )
 
     ha = ShoppingListToProduct(
@@ -71,7 +71,7 @@ def fixtures():
     p = Product(
         name='Sportlife',
         id=8711400406133,
-        price=15
+        price=150
     )
 
     pa = ShoppingListToProduct(

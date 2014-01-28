@@ -4,17 +4,16 @@
     <h2>
         Boodschappenlijstjes
         <a class="btn btn-header btn-primary pull-right" data-toggle="modal" data-target="#create-shopping-list">
-            <span class="glyphicon-plus"></span>
-            Nieuwe boodschappenlijst
+            + Nieuwe boodschappenlijst
         </a>
     </h2>
     <hr>
 
     <table class="table table-bordered table-striped">
         <tr>
-            <th>Name</th>
+            <th>Naam</th>
             <th>Producten</th>
-            <th>Betaald?</th>
+            <th>Status</th>
             <th>Acties</th>
         </tr>
                 
@@ -22,12 +21,21 @@
             <tr>
                 <td>{{ list.name }}</td>
                 <td>
-                    {% for product in list.products %}
-                        {{ product.name }},
-                    {% endfor %}
-                    <a href="" class="btn btn-default pull-right btn-sm">Wijzigen</a>
+                    <table class="table table-bordered">
+                        <tr><th>Naam</th><th>Prijs</th><th></th></tr>
+                        {% for assoc in list.products %}
+                            <tr>
+                                <td>{{ assoc.product.name }}</td>
+                                <td>{{ assoc.product.price / 100 }}</td>
+                                <td style="width:50px;">
+                                    <a href="{{ url_for('shoppinglists_views.remove_product', id=list.id, product_id=assoc.product.id) }}" class="btn btn-xs btn-warning">&times; Verwijderen</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <a href="" class="btn btn-default pull-right btn-sm">+ Product toevoegen</a>
                 </td>
-                <td>{% if list.payed %}Ja{% else %}Nee{% endif %}</td>
+                <td>{{ list.nice_status.capitalize() }}</td>
                 <td>
                     <div class="btn-group">
                     <a href="{{ url_for('shoppinglists_views.remove', id=list.id) }}" title="Verwijderen" class="btn btn-warning btn-sm">&times;</a>

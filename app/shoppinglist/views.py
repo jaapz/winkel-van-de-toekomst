@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, redirect, url_for, abort
 from flask.ext.login import login_required, current_user
+from sqlalchemy import and_
 
 from app import db
-from app.shoppinglist.models import ShoppingList
+from app.shoppinglist.models import ShoppingList, ShoppingListToProduct
 from app.shoppinglist.forms import ShoppingListForm
 
 shoppinglists_views = Blueprint('shoppinglists_views', __name__,
@@ -39,6 +40,25 @@ def remove(id):
         abort(404)
 
     db.session.delete(my_list)
+    db.session.commit()
+
+    return redirect(url_for('shoppinglists_views.overview'))
+
+
+@shoppinglists_views.route('/<int:id>/products/remove/<int:product_id>',
+                           methods=['GET'])
+@login_required
+def remove_product(id, product_id):
+    """ Removes a product from the shopping list. """
+    assoc = ShoppingListToProduct.query.filter(and_(
+        ShoppingListToProduct.product_id == product_id,
+        ShoppingListToProduct.shopping_list_id == id
+    )).first()
+
+    if assoc is None:
+        abort(404)
+
+    db.session.delete(assoc)
     db.session.commit()
 
     return redirect(url_for('shoppinglists_views.overview'))
