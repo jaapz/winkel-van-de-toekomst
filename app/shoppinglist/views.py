@@ -4,7 +4,7 @@ from sqlalchemy import and_
 
 from app import db
 from app.shoppinglist.models import ShoppingList, ShoppingListToProduct
-from app.shoppinglist.forms import ShoppingListForm
+from app.shoppinglist.forms import ShoppingListForm, ProductForm
 
 shoppinglists_views = Blueprint('shoppinglists_views', __name__,
                                 url_prefix='/shoppinglists')
@@ -24,8 +24,11 @@ def overview():
         db.session.add(my_list)
         db.session.commit()
 
+    add_product_form = ProductForm()
+
     return render_template('shoppinglists/list.html',
-                           create_list_form=ShoppingListForm())
+                           create_list_form=create_list_form,
+                           add_product_form=add_product_form)
 
 
 @shoppinglists_views.route('/remove/<int:id>', methods=['GET'])
@@ -60,5 +63,35 @@ def remove_product(id, product_id):
 
     db.session.delete(assoc)
     db.session.commit()
+
+    return redirect(url_for('shoppinglists_views.overview'))
+
+
+@shoppinglists_views.route('/<int:id>/products/add', methods=['POST'])
+@login_required
+def add_product(id):
+    """ Adds a product to a shopping list. """
+    shopping_list = ShoppingList.query.get(id)
+    if shopping_list is None:
+        abort(404)
+
+    form = ProductForm()
+    if form.validate_on_submit():
+        product = form.product.data
+        assoc = ShoppingListToProduct.query.filter(and_(
+            ShoppingListToProduct.product_id == product.id,
+            ShoppingListToProduct.shopping_list_id == shopping_list.id
+        )).first()
+
+        if assoc is None:
+            assoc = ShoppingListToProduct(
+                product=product,
+                shopping_list=shopping_list,
+                amount=int(form.amount.data),
+                amount_scanned=0
+            )
+
+            db.session.add(assoc)
+            db.session.commit()
 
     return redirect(url_for('shoppinglists_views.overview'))

@@ -22,23 +22,24 @@
                 <td>{{ list.name }}</td>
                 <td>
                     <table class="table table-bordered">
-                        <tr><th>Naam</th><th>Prijs</th><th></th></tr>
+                        <tr><th>Naam</th><th>Prijs</th><th>Hoeveelheid</th><th></th></tr>
                         {% for assoc in list.products %}
                             <tr>
                                 <td>{{ assoc.product.name }}</td>
                                 <td>{{ assoc.product.price / 100 }}</td>
+                                <td>{{ assoc.amount }}</td>
                                 <td style="width:50px;">
                                     <a href="{{ url_for('shoppinglists_views.remove_product', id=list.id, product_id=assoc.product.id) }}" class="btn btn-xs btn-warning">&times; Verwijderen</a>
                                 </td>
                             </tr>
                         {% endfor %}
                     </table>
-                    <a href="" class="btn btn-default pull-right btn-sm">+ Product toevoegen</a>
+                    <a data-toggle="modal" data-target="#add-product" class="add-product-button btn btn-default pull-right btn-sm" form-action="{{ url_for('shoppinglists_views.add_product', id=list.id) }}">+ Product toevoegen</a>
                 </td>
                 <td>{{ list.nice_status.capitalize() }}</td>
                 <td>
                     <div class="btn-group">
-                    <a href="{{ url_for('shoppinglists_views.remove', id=list.id) }}" title="Verwijderen" class="btn btn-warning btn-sm">&times;</a>
+                    <a href="{{ url_for('shoppinglists_views.remove', id=list.id) }}" title="Verwijderen" class="btn btn-warning btn-sm">&times; Verwijderen</a>
                 </div>
                 </td>
             </tr>
@@ -51,7 +52,7 @@
                 <form method="POST" role="form">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        <h4 class="modal-title">Shopping list maken</h4>
+                        <h4 class="modal-title">Boodschappenlijst maken</h4>
                     </div>
                     <div class="modal-body">
                         {{ create_list_form.csrf_token }}
@@ -66,7 +67,55 @@
                         <input type="submit" value="Aanmaken" class="btn btn-primary">
                     </div>
                 </form>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="add-product">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" role="form" action="">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Product toevoegen</h4>
+                    </div>
+                    <div class="modal-body">
+                        {{ add_product_form.csrf_token }}
+                        
+                        <div class="create_list_form-group">
+                            {{ add_product_form.product.label }}
+                            {{ add_product_form.product(class="form-control") }}
+                        </div>
+
+                        <div class="create_list_form-group">
+                            <br>
+                            {{ add_product_form.amount.label }}
+                            {{ add_product_form.amount(class="form-control") }}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <input type="submit" value="Toevoegen" class="btn btn-primary">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{super()}}
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.add-product-button').on('click', function(event) {
+                var $el, $form;
+
+                $el = $(event.target);
+                $form = $('#add-product form');
+
+                $form.attr('action', $el.attr('form-action'));
+            });
+        });
+    </script>
 {% endblock %}
