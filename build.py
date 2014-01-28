@@ -52,13 +52,21 @@ def fixtures():
         price=10.0
     )
 
+    p = Product(
+        name='Sportlife',
+        barcode='8711400406133',
+        price=1.50
+    )
+
     s = ShoppingList(user=u, name='Mijn Lijstje')
     s.products.append(b)
     s.products.append(h)
+    s.products.append(p)
 
     db.session.add(s)
     db.session.add(b)
     db.session.add(h)
+    db.session.add(p)
     db.session.commit()
 
 
