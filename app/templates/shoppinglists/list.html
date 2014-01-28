@@ -1,0 +1,64 @@
+{% extends 'index.html' %}
+
+{% block content %}
+    <h2>
+        Boodschappenlijstjes
+        <a class="btn btn-header btn-primary pull-right" data-toggle="modal" data-target="#create-shopping-list">
+            <span class="glyphicon-plus"></span>
+            Nieuwe boodschappenlijst
+        </a>
+    </h2>
+    <hr>
+
+    <table class="table table-bordered table-striped">
+        <tr>
+            <th>Name</th>
+            <th>Producten</th>
+            <th>Betaald?</th>
+            <th>Acties</th>
+        </tr>
+                
+        {% for list in current_user.shopping_lists %}
+            <tr>
+                <td>{{ list.name }}</td>
+                <td>
+                    {% for product in list.products %}
+                        {{ product.name }},
+                    {% endfor %}
+                    <a href="" class="btn btn-default pull-right btn-sm">Wijzigen</a>
+                </td>
+                <td>{% if list.payed %}Ja{% else %}Nee{% endif %}</td>
+                <td>
+                    <div class="btn-group">
+                    <a href="{{ url_for('shoppinglists_views.remove', id=list.id) }}" title="Verwijderen" class="btn btn-warning btn-sm">&times;</a>
+                </div>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <div class="modal fade" id="create-shopping-list">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" role="form">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Shopping list maken</h4>
+                    </div>
+                    <div class="modal-body">
+                        {{ create_list_form.csrf_token }}
+                        
+                        <div class="create_list_form-group">
+                            {{ create_list_form.name.label }}
+                            {{ create_list_form.name(class="form-control") }}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <input type="submit" value="Aanmaken" class="btn btn-primary">
+                    </div>
+                </form>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+{% endblock %}
