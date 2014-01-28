@@ -1,7 +1,7 @@
 from flask import Blueprint, abort, jsonify, g, Response, json, request
 
 from app import db
-from app.shoppinglist.models import ShoppingList, Product
+from app.shoppinglist.models import ShoppingList, Product, ShoppingListToProduct
 from app.users.auth import needs_auth
 
 shoppinglist_api = Blueprint('shoppinglist_api', __name__, url_prefix='/api/shoppinglists')
@@ -38,36 +38,62 @@ def get_shoppinglists_products(id):
     if shopping_list is None:
         abort(404)
 
-    results = [p.to_dict() for p in shopping_list.products]
+    results = [p.product.to_dict(shopping_list) for p in shopping_list.products]
     return Response(json.dumps(results), mimetype='application/json')
 
 
-@shoppinglist_api.route('/<int:id>/products', methods=['POST', 'DELETE'])
+@shoppinglist_api.route('/<int:id>/products', methods=['POST', 'PUT', 'DELETE'])
 @needs_auth
-def post_shoppinglists_products(id):
+def post_shoppinglists_product(id):
     """ Fetch all products for a shopping list. """
     shopping_list = ShoppingList.query.get(id)
     if shopping_list is None:
         abort(404)
 
+    # If no ID is given, we cannot do anything.
     data = json.loads(request.data)
     try:
         barcode = data['id']
     except KeyError:
         abort(422)
 
+    # Get the extra values we could post.
+    amount = data.get('amount', None)
+    amount_scanned = data.get('amount_scanned', None)
+
     product = Product.query.get(barcode)
     if product is None:
         abort(404)
 
+    assoc = product.get_shopping_list_assocation(shopping_list)
+
+    # If we are POSTing we expect to not have a association yet, so we create
+    # a new one.
     if request.method == 'POST':
-        shopping_list.products.append(product)
+        if assoc is None:
+            assoc = ShoppingListToProduct(
+                product=product,
+                shopping_list=shopping_list,
+                amount=amount,
+                amount_scanned=amount_scanned
+            )
+
+            shopping_list.products.append(assoc)
+
+    # If we are PUTting, we do already have an association so we update it.
+    elif request.method == 'PUT':
+        if assoc is not None:
+            # Update the amounts only when we have a non-None value for each.
+            assoc.amount = amount if amount is not None else assoc.amount
+            assoc.amount_scanned = amount_scanned if aount_scanned is not None else assoc.amount_scanned
+
+    # Deleting means we want to remove the association.
     elif request.method == 'DELETE':
-        shopping_list.products.remove(product)
+        db.session.delete(assoc)
 
     db.session.commit()
 
-    results = [p.to_dict() for p in shopping_list.products]
+    results = [p.product.to_dict(shopping_list) for p in shopping_list.products]
     return Response(json.dumps(results), mimetype='application/json')
 
 
