@@ -60,17 +60,24 @@ class ShoppingList(db.Model):
     """ Represents a shopping list containing several products. """
     __tablename__ = 'shopping_list'
 
+    STATUSSES = ['niet betaald', 'in behandeling', 'betaald']
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
-    payed = db.Column(db.Boolean, default=False)
+    status = db.Column(db.Integer, default=0)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship('User')
     products = db.relationship(ShoppingListToProduct)
+
+    @property
+    def nice_status(self):
+        return ShoppingList.STATUSSES[self.status]
 
     def to_dict(self):
         return dict(
             id=self.id,
             name=self.name,
+            status=self.status,
             user_id=self.user.id if self.user else None,
             products=[p.product.to_dict(self) for p in self.products]
         )
