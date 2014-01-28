@@ -42,19 +42,19 @@ def fixtures():
 
     b = Product(
         name='Blik Bier',
-        barcode='1902901902901902',
+        id=1902901902901902,
         price=15.0
     )
 
     h = Product(
         name='Hagelslag',
-        barcode='9090191919348524',
+        id=9090191919348524,
         price=10.0
     )
 
     p = Product(
         name='Sportlife',
-        barcode='8711400406133',
+        id=8711400406133,
         price=1.50
     )
 

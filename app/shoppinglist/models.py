@@ -12,16 +12,15 @@ class Product(db.Model):
     """ Represents a real-life Product that the shop sells. """
     __tablename__ = 'product'
 
+    # ID doubles as the barcode
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
-    barcode = db.Column(db.String(100))
     price = db.Column(db.Float(2))
 
     def to_dict(self):
         return dict(
             id=self.id,
             name=self.name,
-            barcode=self.barcode,
             price=self.price,
             amount=2,
             amount_scanned=1
