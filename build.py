@@ -9,7 +9,7 @@ sys.path.append(_curpath)
 
 from app import db
 from app.users.models import User
-from app.shoppinglist.models import Product, ShoppingList
+from app.shoppinglist.models import Product, ShoppingList, ShoppingListToProduct
 
 
 @task()
@@ -40,33 +40,52 @@ def fixtures():
 
         db.session.add(u)
 
+    s = ShoppingList(user=u, name='Mijn Lijstje')
+
     b = Product(
         name='Blik Bier',
         id=1902901902901902,
-        price=15.0
+        price=150
+    )
+
+    ba = ShoppingListToProduct(
+        product=b,
+        shopping_list=s,
+        amount=3,
+        amount_scanned=2
     )
 
     h = Product(
         name='Hagelslag',
         id=9090191919348524,
-        price=10.0
+        price=100
+    )
+
+    ha = ShoppingListToProduct(
+        product=h,
+        shopping_list=s,
+        amount=2,
+        amount_scanned=2
     )
 
     p = Product(
         name='Sportlife',
         id=8711400406133,
-        price=1.50
+        price=15
     )
 
-    s = ShoppingList(user=u, name='Mijn Lijstje')
-    s.products.append(b)
-    s.products.append(h)
-    s.products.append(p)
+    pa = ShoppingListToProduct(
+        product=p,
+        shopping_list=s,
+        amount=1,
+        amount_scanned=2
+    )
+
+    s.products.append(ba)
+    s.products.append(ha)
+    s.products.append(pa)
 
     db.session.add(s)
-    db.session.add(b)
-    db.session.add(h)
-    db.session.add(p)
     db.session.commit()
 
 
