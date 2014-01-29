@@ -64,7 +64,12 @@ def update_shoppinglist(id, shoppinglist):
 @needs_auth
 def get_shoppinglists():
     """ Fetch all shopping lists the current user can see. """
-    results = [l.to_dict() for l in g.current_user.shopping_lists]
+    if g.current_user.id == CheckoutUser.id:
+        shopping_lists = ShoppingList.query.all()
+    else:
+        shopping_lists = g.current_user.shopping_lists
+
+    results = [l.to_dict() for l in shopping_lists]
     return Response(json.dumps(results), mimetype='application/json')
 
 
