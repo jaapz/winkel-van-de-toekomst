@@ -1,6 +1,34 @@
 import hashlib
+from hashlib import sha512
+from uuid import uuid4
 
-from app import db
+from app import db, app
+
+
+class CheckoutUser():
+    """ The checkout user is only used when a checkout app is doing requests.
+    It has a password made of a secret hash that is configured in the app. """
+
+    id = uuid4()
+    username = 'checkout'
+    name = 'Checkout User'
+    password = sha512(app.config['SECRET_KEY']).hexdigest()
+
+    def get_id(self):
+        """ Get the id as a unicode, for Flask-Login. """
+        return unicode(self.id)
+
+    def is_authenticated(self):
+        """ Whether or not a user is authenticated. Needed for Flask-Login"""
+        return True
+
+    def is_active(self):
+        """ Whether or not a user is active. Needed for Flask-Login. """
+        return True
+
+    def is_anonymous(self):
+        """ If a user is anonymous. Needed for Flask-Login """
+        return False
 
 
 class User(db.Model):
