@@ -86,7 +86,7 @@ def post_shoppinglists_product(id):
         if assoc is not None:
             # Update the amounts only when we have a non-None value for each.
             assoc.amount = amount if amount is not None else assoc.amount
-            assoc.amount_scanned = amount_scanned if aount_scanned is not None else assoc.amount_scanned
+            assoc.amount_scanned = amount_scanned if amount_scanned is not None else assoc.amount_scanned
 
     db.session.commit()
 
