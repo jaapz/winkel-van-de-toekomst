@@ -6,6 +6,7 @@ from app import db
 from app.shoppinglist.models import (ShoppingList, Product,
                                      ShoppingListToProduct)
 from app.users.auth import needs_auth
+from app.users.models import CheckoutUser
 
 shoppinglist_api = Blueprint('shoppinglist_api', __name__,
                              url_prefix='/api/shoppinglists')
@@ -21,7 +22,8 @@ def get_shoppinglist(func):
         if shoppinglist is None:
             abort(404)
 
-        if shoppinglist.user.id != g.current_user.id:
+        if g.current_user.id != CheckoutUser.id and\
+           shoppinglist.user.id != g.current_user.id:
             abort(404)
 
         kwargs['shoppinglist'] = shoppinglist
