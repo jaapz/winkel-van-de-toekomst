@@ -75,11 +75,15 @@ def post_shoppinglists_product(id):
             assoc = ShoppingListToProduct(
                 product=product,
                 shopping_list=shopping_list,
-                amount=amount,
-                amount_scanned=amount_scanned
+                amount=amount if amount is not None else 0,
+                amount_scanned=amount_scanned if amount_scanned is not None else 1
             )
 
             shopping_list.products.append(assoc)
+        else:
+            # Heighten the amount_scanned automatically if we already have the
+            # product in our list.
+            assoc.amount_scanned += 1
 
     # If we are PUTting, we do already have an association so we update it.
     elif request.method == 'PUT':
