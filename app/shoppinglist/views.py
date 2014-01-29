@@ -42,6 +42,9 @@ def remove(id):
     if my_list.user.id != current_user.id:
         abort(404)
 
+    for assoc in my_list.products:
+        db.session.delete(assoc)
+
     db.session.delete(my_list)
     db.session.commit()
 
