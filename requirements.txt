@@ -11,6 +11,7 @@ Werkzeug==0.9.4
 argparse==1.2.1
 distribute==0.6.24
 ecdsa==0.10
+fabric-virtualenv==0.2.1
 itsdangerous==0.23
 paramiko==1.12.1
 py==1.4.15
