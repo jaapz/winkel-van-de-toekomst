@@ -1,26 +1,61 @@
 from flask import Blueprint, abort, jsonify, g, Response, json, request
 from sqlalchemy import and_
+from functools import wraps
 
 from app import db
-from app.shoppinglist.models import ShoppingList, Product, ShoppingListToProduct
+from app.shoppinglist.models import (ShoppingList, Product,
+                                     ShoppingListToProduct)
 from app.users.auth import needs_auth
 
-shoppinglist_api = Blueprint('shoppinglist_api', __name__, url_prefix='/api/shoppinglists')
+shoppinglist_api = Blueprint('shoppinglist_api', __name__,
+                             url_prefix='/api/shoppinglists')
+
 product_api = Blueprint('product_api', __name__, url_prefix='/api/products')
+
+
+def get_shoppinglist(func):
+    """ Decorator to inject the requested shopping list object if found. """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        shoppinglist = ShoppingList.query.get(kwargs['id'])
+        if shoppinglist is None:
+            abort(404)
+
+        if shoppinglist.user.id != g.current_user.id:
+            abort(404)
+
+        kwargs['shoppinglist'] = shoppinglist
+        return func(*args, **kwargs)
+    return wrapper
 
 
 @shoppinglist_api.route('/<int:id>')
 @needs_auth
-def get_shoppinglist_by_id(id):
+@get_shoppinglist
+def get_shoppinglist_by_id(id, shoppinglist):
     """ Fetch a shoppinglist by id, return json if found, else 404. """
-    shop_list = ShoppingList.query.get(id)
-    if not shop_list:
-        return abort(404)
+    return jsonify(shoppinglist.to_dict())
 
-    if shop_list.user is not g.current_user:
-        return abort(404)
 
-    return jsonify(shop_list.to_dict())
+@shoppinglist_api.route('/<int:id>', methods=['PUT'])
+@needs_auth
+@get_shoppinglist
+def update_shoppinglist(id, shoppinglist):
+    """ Update a shoppinglist, return the updated json if found, else 404. """
+    try:
+        data = json.loads(request.data)
+    except:
+        abort(422)
+
+    name = data.get('name') or None
+    status = data.get('status') or None
+
+    shoppinglist.name = name if name is not None else shoppinglist.name
+    shoppinglist.status = status if status is not None else shoppinglist.status
+
+    db.session.commit()
+
+    return jsonify(shoppinglist.to_dict())
 
 
 @shoppinglist_api.route('')
@@ -33,24 +68,18 @@ def get_shoppinglists():
 
 @shoppinglist_api.route('/<int:id>/products', methods=['GET'])
 @needs_auth
-def get_shoppinglists_products(id):
+@get_shoppinglist
+def get_shoppinglists_products(id, shoppinglist):
     """ Fetch all products for a shopping list. """
-    shopping_list = ShoppingList.query.get(id)
-    if shopping_list is None:
-        abort(404)
-
-    results = [p.product.to_dict(shopping_list) for p in shopping_list.products]
+    results = [p.product.to_dict(shoppinglist) for p in shoppinglist.products]
     return Response(json.dumps(results), mimetype='application/json')
 
 
 @shoppinglist_api.route('/<int:id>/products', methods=['POST', 'PUT'])
 @needs_auth
-def post_shoppinglists_product(id):
+@get_shoppinglist
+def post_shoppinglists_product(id, shoppinglist):
     """ Fetch all products for a shopping list. """
-    shopping_list = ShoppingList.query.get(id)
-    if shopping_list is None:
-        abort(404)
-
     # If no ID is given, we cannot do anything.
     data = json.loads(request.data)
     try:
@@ -66,7 +95,7 @@ def post_shoppinglists_product(id):
     if product is None:
         abort(404)
 
-    assoc = product.get_shopping_list_assocation(shopping_list)
+    assoc = product.get_shopping_list_assocation(shoppinglist)
 
     # If we are POSTing we expect to not have a association yet, so we create
     # a new one.
@@ -74,12 +103,12 @@ def post_shoppinglists_product(id):
         if assoc is None:
             assoc = ShoppingListToProduct(
                 product=product,
-                shopping_list=shopping_list,
+                shopping_list=shoppinglist,
                 amount=amount if amount is not None else 0,
                 amount_scanned=amount_scanned if amount_scanned is not None else 1
             )
 
-            shopping_list.products.append(assoc)
+            shoppinglist.products.append(assoc)
         else:
             # Heighten the amount_scanned automatically if we already have the
             # product in our list.
@@ -94,7 +123,7 @@ def post_shoppinglists_product(id):
 
     db.session.commit()
 
-    results = [p.product.to_dict(shopping_list) for p in shopping_list.products]
+    results = [p.product.to_dict(shoppinglist) for p in shoppinglist.products]
     return Response(json.dumps(results), mimetype='application/json')
 
 
